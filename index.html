@@ -141,6 +141,42 @@
             line-height: 1.6;
         }
 
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .kpi {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .kpi-label {
+            color: #999;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .kpi-meta {
+            color: #667eea;
+            font-size: 12px;
+        }
+
         .data-section {
             background: white;
             padding: 30px;
@@ -186,6 +222,10 @@
 
         table tbody tr:hover {
             background: #f9fafb;
+        }
+
+        table tbody tr.with-sales {
+            background: #f0fdf4;
         }
 
         .calculation-section {
@@ -264,8 +304,21 @@
             margin-bottom: 10px;
         }
 
+        .achievement {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .low-achievement {
+            color: #ef4444;
+        }
+
         @media (max-width: 768px) {
             .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -289,7 +342,7 @@
         <div class="header">
             <h1>📊 Painel Vitória de Lima</h1>
             <p>Relatórios Hora-a-Hora com Projeção Corrigida</p>
-            <div class="subtitle">Cálculo de projeção baseado em horas com vendas reais</div>
+            <div class="subtitle">Cálculo de projeção baseado em horas com faturamento real</div>
         </div>
 
         <div class="upload-section">
@@ -298,7 +351,7 @@
                 <div class="upload-icon">📤</div>
                 <div class="upload-text">
                     <h3>Arraste seu arquivo aqui ou clique para selecionar</h3>
-                    <p>Suporta arquivos CSV e TXT (formato hora-a-hora)</p>
+                    <p>Suporta arquivos CSV e TXT (formato hora-a-hora com colunas: Hora, Meta Volumes, Volumes, Meta R$, Faturado)</p>
                 </div>
             </div>
         </div>
@@ -312,7 +365,7 @@
                 </div>
 
                 <div class="card">
-                    <h3>Horas com Vendas</h3>
+                    <h3>Horas com Faturamento</h3>
                     <div class="value" id="hoursValue">0</div>
                     <div class="detail" id="hoursDetail">-</div>
                 </div>
@@ -324,18 +377,33 @@
                 </div>
             </div>
 
+            <div class="kpi-grid">
+                <div class="kpi">
+                    <div class="kpi-label">Meta Faturamento</div>
+                    <div class="kpi-value" id="metaValue">R$ 0,00</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">% Atingimento</div>
+                    <div class="kpi-value" id="achievementValue">0,00%</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Diferença</div>
+                    <div class="kpi-value" id="diffValue">R$ 0,00</div>
+                </div>
+            </div>
+
             <div class="calculation-section">
                 <h2>🧮 Cálculo da Projeção</h2>
                 <div class="calculation-step">
-                    <div class="label">Passo 1: Total Faturado</div>
+                    <div class="label">Passo 1: Faturamento Total Registrado</div>
                     <div class="result" id="step1">R$ 0,00</div>
                 </div>
                 <div class="calculation-step">
-                    <div class="label">Passo 2: Horas com Vendas</div>
+                    <div class="label">Passo 2: Horas com Faturamento (> 0)</div>
                     <div class="result" id="step2">0 horas</div>
                 </div>
                 <div class="calculation-step">
-                    <div class="label">Passo 3: Média por Hora (Faturamento ÷ Horas)</div>
+                    <div class="label">Passo 3: Média por Hora (Faturamento Total ÷ Horas)</div>
                     <div class="result" id="step3">R$ 0,00/hora</div>
                 </div>
                 <div class="calculation-step">
@@ -345,19 +413,18 @@
             </div>
 
             <div class="data-section">
-                <h2>📋 Dados Completos</h2>
+                <h2>📋 Dados por Hora</h2>
                 <div style="margin-bottom: 20px;">
                     <button class="export-btn" onclick="exportToCSV()">📥 Exportar CSV</button>
                 </div>
                 <table id="dataTable">
                     <thead>
                         <tr>
-                            <th>Horário</th>
-                            <th>Quantidade</th>
-                            <th>Valor Saída Outras</th>
-                            <th>Valor Diferença</th>
-                            <th>Valor Cto Bruto</th>
-                            <th>Valor Cto Líquido</th>
+                            <th>Hora</th>
+                            <th>Meta Volumes</th>
+                            <th>Volumes</th>
+                            <th>Meta R$</th>
+                            <th>Faturado</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -367,7 +434,7 @@
 
             <div class="footer">
                 <strong>Painel Vitória de Lima</strong> | Projeção Corrigida | 
-                <span style="color: #10b981;">✓ Cálculo baseado em horas com vendas reais</span>
+                <span style="color: #10b981;">✓ Cálculo baseado em horas com faturamento real</span>
             </div>
         </div>
 
@@ -418,54 +485,71 @@
 
         function parseCSV(content) {
             const lines = content.split('\n').filter(line => line.trim());
-            const headers = lines[0].split(';');
+            const headers = lines[0].split('\t');
             const data = [];
 
             for (let i = 1; i < lines.length; i++) {
-                const values = lines[i].split(';');
-                const row = {};
-                headers.forEach((header, index) => {
-                    row[header.trim()] = values[index] ? values[index].trim() : '';
-                });
-                data.push(row);
+                const values = lines[i].split('\t');
+                if (values[0].trim() === 'Totais:' || values[0].trim() === 'PROJEÇÃO' || values[0].trim() === '%') {
+                    continue; // Pular linhas de totais e projeção
+                }
+
+                const row = {
+                    hora: values[0] ? values[0].trim() : '',
+                    metaVolumes: parseFloat(values[1] ? values[1].replace(/\./g, '').replace(',', '.') : 0) || 0,
+                    volumes: parseFloat(values[2] ? values[2].replace(/\./g, '').replace(',', '.') : 0) || 0,
+                    metaR: parseFloat(values[3] ? values[3].replace(/\./g, '').replace(',', '.') : 0) || 0,
+                    faturado: parseFloat(values[4] ? values[4].replace(/\./g, '').replace(',', '.') : 0) || 0
+                };
+
+                if (row.hora) {
+                    data.push(row);
+                }
             }
 
             return data;
         }
 
         function calculateAndDisplay(data) {
-            // Extrair horários únicos
-            const hoursSet = new Set();
-            let totalValue = 0;
+            let totalFaturado = 0;
+            let totalMeta = 0;
+            let hoursWithSales = 0;
 
+            // Calcular totais e contar horas com faturamento
             data.forEach(row => {
-                const dtahorlancto = row['DTAHORLANCTO'];
-                if (dtahorlancto) {
-                    const hora = dtahorlancto.split(' ')[1]; // Extrai HH:MM
-                    hoursSet.add(hora);
-
-                    const vlrCtobruto = parseFloat(row['VLRCTOBRUTO'].replace(/,/g, '.'));
-                    if (!isNaN(vlrCtobruto)) {
-                        totalValue += Math.abs(vlrCtobruto); // Usar valor absoluto
-                    }
+                totalFaturado += row.faturado;
+                totalMeta += row.metaR;
+                if (row.faturado > 0) {
+                    hoursWithSales++;
                 }
             });
 
-            const hoursWithSales = hoursSet.size;
-            const averagePerHour = hoursWithSales > 0 ? totalValue / hoursWithSales : 0;
+            // Calcular projeção
+            const averagePerHour = hoursWithSales > 0 ? totalFaturado / hoursWithSales : 0;
             const projection = averagePerHour * 24;
+            const achievement = totalMeta > 0 ? (projection / totalMeta) * 100 : 0;
+            const diff = projection - totalMeta;
 
             // Atualizar cards
-            document.getElementById('totalValue').textContent = formatCurrency(totalValue);
-            document.getElementById('totalDetail').textContent = `${data.length} lançamentos`;
+            document.getElementById('totalValue').textContent = formatCurrency(totalFaturado);
+            document.getElementById('totalDetail').textContent = `de ${data.length} horas`;
             
             document.getElementById('hoursValue').textContent = hoursWithSales;
-            document.getElementById('hoursDetail').textContent = `${Array.from(hoursSet).sort().join(', ')}`;
+            document.getElementById('hoursDetail').textContent = `horas com faturamento`;
             
             document.getElementById('projectionValue').textContent = formatCurrency(projection);
 
+            // Atualizar KPIs
+            document.getElementById('metaValue').textContent = formatCurrency(totalMeta);
+            
+            const achievementClass = achievement >= 100 ? 'achievement' : 'low-achievement';
+            document.getElementById('achievementValue').innerHTML = 
+                `<span class="${achievementClass}">${achievement.toFixed(2)}%</span>`;
+            
+            document.getElementById('diffValue').textContent = formatCurrency(diff);
+
             // Atualizar passos de cálculo
-            document.getElementById('step1').textContent = formatCurrency(totalValue);
+            document.getElementById('step1').textContent = formatCurrency(totalFaturado);
             document.getElementById('step2').textContent = `${hoursWithSales} horas`;
             document.getElementById('step3').textContent = formatCurrency(averagePerHour) + '/hora';
             document.getElementById('step4').textContent = formatCurrency(projection);
@@ -475,13 +559,13 @@
             tableBody.innerHTML = '';
             data.forEach(row => {
                 const tr = document.createElement('tr');
+                tr.className = row.faturado > 0 ? 'with-sales' : '';
                 tr.innerHTML = `
-                    <td>${row['DTAHORLANCTO'] || '-'}</td>
-                    <td>${row['QTDSAIDAOUTRAS'] || '-'}</td>
-                    <td>${formatDisplayValue(row['VLRSAIDAOUTRAS'] || '0')}</td>
-                    <td>${formatDisplayValue(row['VLRDIFERENCA'] || '0')}</td>
-                    <td>${formatDisplayValue(row['VLRCTOBRUTO'] || '0')}</td>
-                    <td>${formatDisplayValue(row['VLRCTOLIQUIDO'] || '0')}</td>
+                    <td>${row.hora || '-'}</td>
+                    <td>${formatNumber(row.metaVolumes)}</td>
+                    <td>${formatNumber(row.volumes)}</td>
+                    <td>${formatCurrency(row.metaR)}</td>
+                    <td><strong>${formatCurrency(row.faturado)}</strong></td>
                 `;
                 tableBody.appendChild(tr);
             });
@@ -491,7 +575,7 @@
             emptyState.style.display = 'none';
 
             // Armazenar dados para exportação
-            window.reportData = { data, totalValue, hoursWithSales, projection };
+            window.reportData = { data, totalFaturado, totalMeta, hoursWithSales, projection };
         }
 
         function formatCurrency(value) {
@@ -503,34 +587,34 @@
             }).format(value);
         }
 
-        function formatDisplayValue(str) {
-            const value = parseFloat(str.replace(/,/g, '.'));
-            if (isNaN(value)) return str;
+        function formatNumber(value) {
             return new Intl.NumberFormat('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             }).format(value);
         }
 
         function exportToCSV() {
             if (!window.reportData) return;
 
-            const { data, totalValue, hoursWithSales, projection } = window.reportData;
+            const { data, totalFaturado, totalMeta, hoursWithSales, projection } = window.reportData;
             
             let csv = 'Painel Vitória de Lima - Relatório Hora-a-Hora\n';
             csv += 'Data: ' + new Date().toLocaleDateString('pt-BR') + '\n\n';
             csv += 'RESUMO\n';
-            csv += 'Faturamento Total;' + totalValue.toString().replace('.', ',') + '\n';
-            csv += 'Horas com Vendas;' + hoursWithSales + '\n';
-            csv += 'Projeção Corrigida (24h);' + projection.toString().replace('.', ',') + '\n\n';
+            csv += 'Faturamento Total;' + totalFaturado.toString().replace('.', ',') + '\n';
+            csv += 'Meta Total;' + totalMeta.toString().replace('.', ',') + '\n';
+            csv += 'Horas com Faturamento;' + hoursWithSales + '\n';
+            csv += 'Projeção Corrigida (24h);' + projection.toString().replace('.', ',') + '\n';
+            csv += '% Atingimento;' + ((projection / totalMeta) * 100).toFixed(2).replace('.', ',') + '%\n\n';
             csv += 'DADOS DETALHADOS\n';
             
             // Headers
-            csv += 'DIA;DTAHORLANCTO;QTDSAIDAOUTRAS;QTDDIFERENCA;VLRSAIDAOUTRAS;VLRDIFERENCA;VLRCTOBRUTO;VLRCTOLIQUIDO\n';
+            csv += 'Hora;Meta Volumes;Volumes;Meta R$;Faturado\n';
             
             // Dados
             data.forEach(row => {
-                csv += Object.values(row).join(';') + '\n';
+                csv += `${row.hora};${row.metaVolumes};${row.volumes};${row.metaR};${row.faturado}\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vitória de Lima — Relatórios Hora-a-Hora</title>
+    <title>Vitória de Lima — Faturamento Hora-a-Hora</title>
     <style>
         * {
             margin: 0;
@@ -141,93 +141,6 @@
             line-height: 1.6;
         }
 
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .kpi {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .kpi-label {
-            color: #999;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .kpi-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 5px;
-        }
-
-        .kpi-meta {
-            color: #667eea;
-            font-size: 12px;
-        }
-
-        .data-section {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-            overflow-x: auto;
-        }
-
-        .data-section h2 {
-            color: #333;
-            font-size: 20px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        table th {
-            background: #f3f4f6;
-            color: #333;
-            padding: 12px;
-            text-align: right;
-            font-weight: 600;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        table th:first-child,
-        table td:first-child {
-            text-align: left;
-        }
-
-        table td {
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
-            color: #666;
-        }
-
-        table tbody tr:hover {
-            background: #f9fafb;
-        }
-
-        table tbody tr.with-sales {
-            background: #f0fdf4;
-        }
-
         .calculation-section {
             background: white;
             padding: 30px;
@@ -267,6 +180,58 @@
             color: #1f2937;
         }
 
+        .data-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        .data-section h2 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        table th {
+            background: #f3f4f6;
+            color: #333;
+            padding: 10px;
+            text-align: right;
+            font-weight: 600;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        table th:first-child,
+        table td:first-child {
+            text-align: left;
+        }
+
+        table td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #666;
+        }
+
+        table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        table tbody tr.with-sales {
+            background: #f0fdf4;
+            font-weight: 500;
+        }
+
         .export-btn {
             background: #667eea;
             color: white;
@@ -304,15 +269,6 @@
             margin-bottom: 10px;
         }
 
-        .achievement {
-            color: #10b981;
-            font-weight: 600;
-        }
-
-        .low-achievement {
-            color: #ef4444;
-        }
-
         .error-message {
             background: #fef3c7;
             border-left: 4px solid #f59e0b;
@@ -327,21 +283,17 @@
                 grid-template-columns: 1fr;
             }
 
-            .kpi-grid {
-                grid-template-columns: 1fr;
-            }
-
             .header h1 {
                 font-size: 24px;
             }
 
             table {
-                font-size: 12px;
+                font-size: 11px;
             }
 
             table th,
             table td {
-                padding: 8px;
+                padding: 6px;
             }
         }
     </style>
@@ -350,17 +302,17 @@
     <div class="container">
         <div class="header">
             <h1>📊 Painel Vitória de Lima</h1>
-            <p>Relatórios Hora-a-Hora com Projeção Corrigida</p>
+            <p>Faturamento Hora-a-Hora com Projeção Corrigida</p>
             <div class="subtitle">Cálculo de projeção baseado em horas com faturamento real</div>
         </div>
 
         <div class="upload-section">
             <div class="upload-area" id="uploadArea">
-                <input type="file" id="fileInput" accept=".csv,.txt,.xls,.xlsx" />
+                <input type="file" id="fileInput" accept=".txt,.csv" />
                 <div class="upload-icon">📤</div>
                 <div class="upload-text">
                     <h3>Arraste seu arquivo aqui ou clique para selecionar</h3>
-                    <p>Suporta arquivos TXT, CSV e XLSX (formato hora-a-hora)</p>
+                    <p>Arquivo: 78- Faturamento HH.txt (formato com ponto-e-vírgula)</p>
                 </div>
             </div>
         </div>
@@ -368,7 +320,7 @@
         <div id="errorContainer" style="display: none; margin-bottom: 30px;"></div>
 
         <div id="resultsContainer" style="display: none;">
-            <div class="cards-grid" id="cardsGrid">
+            <div class="cards-grid">
                 <div class="card">
                     <h3>Faturamento Total</h3>
                     <div class="value" id="totalValue">R$ 0,00</div>
@@ -378,7 +330,7 @@
                 <div class="card">
                     <h3>Horas com Faturamento</h3>
                     <div class="value" id="hoursValue">0</div>
-                    <div class="detail" id="hoursDetail">-</div>
+                    <div class="detail">horas com vendas</div>
                 </div>
 
                 <div class="card highlighted">
@@ -388,25 +340,10 @@
                 </div>
             </div>
 
-            <div class="kpi-grid">
-                <div class="kpi">
-                    <div class="kpi-label">Meta Faturamento</div>
-                    <div class="kpi-value" id="metaValue">R$ 0,00</div>
-                </div>
-                <div class="kpi">
-                    <div class="kpi-label">% Atingimento</div>
-                    <div class="kpi-value" id="achievementValue">0,00%</div>
-                </div>
-                <div class="kpi">
-                    <div class="kpi-label">Diferença</div>
-                    <div class="kpi-value" id="diffValue">R$ 0,00</div>
-                </div>
-            </div>
-
             <div class="calculation-section">
                 <h2>🧮 Cálculo da Projeção</h2>
                 <div class="calculation-step">
-                    <div class="label">Passo 1: Faturamento Total Registrado</div>
+                    <div class="label">Passo 1: Faturamento Total (valor absoluto)</div>
                     <div class="result" id="step1">R$ 0,00</div>
                 </div>
                 <div class="calculation-step">
@@ -414,7 +351,7 @@
                     <div class="result" id="step2">0 horas</div>
                 </div>
                 <div class="calculation-step">
-                    <div class="label">Passo 3: Média por Hora (Faturamento Total ÷ Horas)</div>
+                    <div class="label">Passo 3: Média por Hora</div>
                     <div class="result" id="step3">R$ 0,00/hora</div>
                 </div>
                 <div class="calculation-step">
@@ -424,18 +361,19 @@
             </div>
 
             <div class="data-section">
-                <h2>📋 Dados por Hora</h2>
+                <h2>📋 Detalhes por Lançamento</h2>
                 <div style="margin-bottom: 20px;">
-                    <button class="export-btn" onclick="exportToCSV()">📥 Exportar CSV</button>
+                    <button class="export-btn" onclick="exportToCSV()">📥 Exportar Relatório</button>
                 </div>
                 <table id="dataTable">
                     <thead>
                         <tr>
-                            <th>Hora</th>
-                            <th>Meta Volumes</th>
-                            <th>Volumes</th>
-                            <th>Meta R$</th>
-                            <th>Faturado</th>
+                            <th>Horário</th>
+                            <th>Quantidade</th>
+                            <th>Valor Saída</th>
+                            <th>Diferença</th>
+                            <th>Valor Cto Bruto</th>
+                            <th>Valor Cto Líquido</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -444,8 +382,8 @@
             </div>
 
             <div class="footer">
-                <strong>Painel Vitória de Lima</strong> | Projeção Corrigida | 
-                <span style="color: #10b981;">✓ Cálculo baseado em horas com faturamento real</span>
+                <strong>Painel Vitória de Lima</strong> | 
+                <span style="color: #10b981;">✓ Projeção corrigida (horas com vendas)</span>
             </div>
         </div>
 
@@ -461,7 +399,6 @@
         const emptyState = document.getElementById('emptyState');
         const errorContainer = document.getElementById('errorContainer');
 
-        // Drag and drop
         uploadArea.addEventListener('click', () => fileInput.click());
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -502,14 +439,14 @@
                     const data = parseFile(content);
                     
                     if (data.length === 0) {
-                        showError('Nenhum dado encontrado no arquivo. Verifique o formato.');
+                        showError('Nenhum dado encontrado no arquivo.');
                         return;
                     }
                     
                     hideError();
                     calculateAndDisplay(data);
                 } catch (error) {
-                    showError(`Erro ao processar arquivo: ${error.message}`);
+                    showError(`Erro: ${error.message}`);
                 }
             };
             reader.readAsText(file);
@@ -519,48 +456,42 @@
             const lines = content.split('\n').filter(line => line.trim());
             let data = [];
 
-            // Detectar se é separado por tabs ou vírgulas
-            const firstLine = lines[0];
-            const separator = firstLine.includes('\t') ? '\t' : ',';
-
-            // Encontrar a linha de headers
-            let headerLineIndex = -1;
-            for (let i = 0; i < Math.min(5, lines.length); i++) {
-                const line = lines[i].toLowerCase();
-                if (line.includes('hora') && line.includes('faturado')) {
-                    headerLineIndex = i;
-                    break;
-                }
-            }
-
-            if (headerLineIndex === -1) {
-                headerLineIndex = 0; // Assume primeira linha é header
-            }
-
-            // Parse dados a partir do header
-            for (let i = headerLineIndex + 1; i < lines.length; i++) {
+            // Pular primeira linha (header)
+            for (let i = 1; i < lines.length; i++) {
                 const line = lines[i].trim();
                 
-                // Pular linhas de totais ou vazias
-                if (!line || line.includes('Totais:') || line.includes('PROJEÇÃO') || line.includes('%') || line.includes('ATINGIMENTO')) {
-                    continue;
+                if (!line) continue;
+
+                const values = line.split(';').map(v => v.trim());
+                
+                // Esperamos: DIA, DTAHORLANCTO, QTDSAIDAOUTRAS, QTDDIFERENCA, VLRSAIDAOUTRAS, VLRDIFERENCA, VLRCTOBRUTO, VLRCTOLIQUIDO
+                if (values.length < 8) continue;
+
+                const dtahorlancto = values[1]; // índice 1
+                const qtdSaida = values[2];      // índice 2
+                const vlrSaida = values[4];      // índice 4
+                const vlrDif = values[5];        // índice 5
+                const vlrBruto = values[6];      // índice 6 - FATURAMENTO
+                const vlrLiquido = values[7];    // índice 7
+
+                // Extrair hora
+                let hora = '';
+                if (dtahorlancto && dtahorlancto.includes(' ')) {
+                    hora = dtahorlancto.split(' ')[1]; // Pega HH:MM
                 }
 
-                const values = line.split(separator).map(v => v.trim());
-                
-                if (values.length < 5) continue;
+                if (!hora) continue;
 
-                const hora = values[0];
-                
-                // Validar se é hora válida (HH:MM ou número de hora)
-                if (!hora || hora === '-' || hora === 'Hora') continue;
+                const brutoValue = parseValue(vlrBruto);
 
                 const row = {
                     hora: hora,
-                    metaVolumes: parseValue(values[1]),
-                    volumes: parseValue(values[2]),
-                    metaR: parseValue(values[3]),
-                    faturado: parseValue(values[4])
+                    dtahorlancto: dtahorlancto,
+                    quantidade: parseValue(qtdSaida),
+                    vlrSaida: parseValue(vlrSaida),
+                    vlrDif: parseValue(vlrDif),
+                    vlrBruto: brutoValue,
+                    vlrLiquido: parseValue(vlrLiquido)
                 };
 
                 data.push(row);
@@ -569,79 +500,66 @@
             return data;
         }
 
-        function parseValue(value) {
-            if (!value || value === '-' || value === '') return 0;
+        function parseValue(str) {
+            if (!str || str === '-' || str === '') return 0;
             
-            // Remove espaços
-            value = value.trim();
+            str = str.trim();
             
-            // Se tem vírgula como separador decimal
-            if (value.includes(',')) {
-                value = value.replace(/\./g, '').replace(',', '.');
-            } else {
-                // Se tem ponto, remove se for formatação de milhar
-                value = value.replace(/\./g, '');
+            // Converter ponto-e-vírgula decimal ou ponto
+            if (str.includes(',')) {
+                str = str.replace(/\./g, '').replace(',', '.');
             }
             
-            return parseFloat(value) || 0;
+            return parseFloat(str) || 0;
         }
 
         function calculateAndDisplay(data) {
-            let totalFaturado = 0;
-            let totalMeta = 0;
+            let totalBruto = 0;
             let hoursWithSales = 0;
+            const uniqueHours = new Set();
 
-            // Calcular totais e contar horas com faturamento
+            // Calcular totais
             data.forEach(row => {
-                totalFaturado += row.faturado;
-                totalMeta += row.metaR;
-                if (row.faturado > 0) {
+                const absValue = Math.abs(row.vlrBruto);
+                totalBruto += absValue;
+                
+                if (absValue > 0) {
                     hoursWithSales++;
+                    uniqueHours.add(row.hora);
                 }
             });
 
             // Calcular projeção
-            const averagePerHour = hoursWithSales > 0 ? totalFaturado / hoursWithSales : 0;
+            const averagePerHour = hoursWithSales > 0 ? totalBruto / hoursWithSales : 0;
             const projection = averagePerHour * 24;
-            const achievement = totalMeta > 0 ? (projection / totalMeta) * 100 : 0;
-            const diff = projection - totalMeta;
 
             // Atualizar cards
-            document.getElementById('totalValue').textContent = formatCurrency(totalFaturado);
-            document.getElementById('totalDetail').textContent = `de ${data.length} horas`;
+            document.getElementById('totalValue').textContent = formatCurrency(totalBruto);
+            document.getElementById('totalDetail').textContent = `em ${data.length} lançamentos`;
             
-            document.getElementById('hoursValue').textContent = hoursWithSales;
-            document.getElementById('hoursDetail').textContent = `horas com faturamento`;
+            document.getElementById('hoursValue').textContent = uniqueHours.size;
             
             document.getElementById('projectionValue').textContent = formatCurrency(projection);
 
-            // Atualizar KPIs
-            document.getElementById('metaValue').textContent = formatCurrency(totalMeta);
-            
-            const achievementClass = achievement >= 100 ? 'achievement' : 'low-achievement';
-            document.getElementById('achievementValue').innerHTML = 
-                `<span class="${achievementClass}">${achievement.toFixed(2)}%</span>`;
-            
-            document.getElementById('diffValue').textContent = formatCurrency(diff);
-
-            // Atualizar passos de cálculo
-            document.getElementById('step1').textContent = formatCurrency(totalFaturado);
-            document.getElementById('step2').textContent = `${hoursWithSales} horas`;
-            document.getElementById('step3').textContent = formatCurrency(averagePerHour) + '/hora';
-            document.getElementById('step4').textContent = formatCurrency(projection);
+            // Atualizar passos
+            document.getElementById('step1').textContent = formatCurrency(totalBruto);
+            document.getElementById('step2').textContent = `${hoursWithSales} lançamentos em ${uniqueHours.size} horas distintas`;
+            document.getElementById('step3').textContent = formatCurrency(averagePerHour) + '/lançamento';
+            document.getElementById('step4').textContent = formatCurrency(projection) + ' (para 24h)';
 
             // Preencher tabela
             const tableBody = document.getElementById('tableBody');
             tableBody.innerHTML = '';
             data.forEach(row => {
                 const tr = document.createElement('tr');
-                tr.className = row.faturado > 0 ? 'with-sales' : '';
+                tr.className = Math.abs(row.vlrBruto) > 0 ? 'with-sales' : '';
                 tr.innerHTML = `
-                    <td>${row.hora || '-'}</td>
-                    <td>${formatNumber(row.metaVolumes)}</td>
-                    <td>${formatNumber(row.volumes)}</td>
-                    <td>${formatCurrency(row.metaR)}</td>
-                    <td><strong>${formatCurrency(row.faturado)}</strong></td>
+                    <td>${row.hora}</td>
+                    <td>${formatNumber(row.quantidade)}</td>
+                    <td>${formatCurrency(row.vlrSaida)}</td>
+                    <td>${formatCurrency(row.vlrDif)}</td>
+                    <td><strong>${formatCurrency(Math.abs(row.vlrBruto))}</strong></td>
+                    <td>${formatCurrency(row.vlrLiquido)}</td>
                 `;
                 tableBody.appendChild(tr);
             });
@@ -650,8 +568,8 @@
             resultsContainer.style.display = 'block';
             emptyState.style.display = 'none';
 
-            // Armazenar dados para exportação
-            window.reportData = { data, totalFaturado, totalMeta, hoursWithSales, projection };
+            // Armazenar para exportação
+            window.reportData = { data, totalBruto, hoursWithSales, uniqueHours: Array.from(uniqueHours), projection };
         }
 
         function formatCurrency(value) {
@@ -665,38 +583,34 @@
 
         function formatNumber(value) {
             return new Intl.NumberFormat('pt-BR', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
             }).format(value);
         }
 
         function exportToCSV() {
             if (!window.reportData) return;
 
-            const { data, totalFaturado, totalMeta, hoursWithSales, projection } = window.reportData;
+            const { data, totalBruto, hoursWithSales, uniqueHours, projection } = window.reportData;
             
-            let csv = 'Painel Vitória de Lima - Relatório Hora-a-Hora\n';
+            let csv = 'Painel Vitória de Lima - Relatório de Faturamento\n';
             csv += 'Data: ' + new Date().toLocaleDateString('pt-BR') + '\n\n';
             csv += 'RESUMO\n';
-            csv += 'Faturamento Total;' + totalFaturado.toString().replace('.', ',') + '\n';
-            csv += 'Meta Total;' + totalMeta.toString().replace('.', ',') + '\n';
-            csv += 'Horas com Faturamento;' + hoursWithSales + '\n';
-            csv += 'Projeção Corrigida (24h);' + projection.toString().replace('.', ',') + '\n';
-            csv += '% Atingimento;' + ((projection / totalMeta) * 100).toFixed(2).replace('.', ',') + '%\n\n';
+            csv += 'Faturamento Total;' + totalBruto.toFixed(2).replace('.', ',') + '\n';
+            csv += 'Lançamentos com Venda;' + hoursWithSales + '\n';
+            csv += 'Horas Distintas;' + uniqueHours.length + '\n';
+            csv += 'Projeção 24h;' + projection.toFixed(2).replace('.', ',') + '\n\n';
             csv += 'DADOS DETALHADOS\n';
+            csv += 'Horário;Quantidade;Valor Saída;Diferença;Valor Cto Bruto;Valor Cto Líquido\n';
             
-            // Headers
-            csv += 'Hora;Meta Volumes;Volumes;Meta R$;Faturado\n';
-            
-            // Dados
             data.forEach(row => {
-                csv += `${row.hora};${row.metaVolumes};${row.volumes};${row.metaR};${row.faturado}\n`;
+                csv += `${row.hora};${row.quantidade};${row.vlrSaida};${row.vlrDif};${Math.abs(row.vlrBruto)};${row.vlrLiquido}\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `Vitoria_Lima_Relatorio_${new Date().toISOString().split('T')[0]}.csv`;
+            link.download = `Vitoria_Lima_Faturamento_${new Date().toISOString().split('T')[0]}.csv`;
             link.click();
         }
     </script>

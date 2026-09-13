@@ -313,6 +313,15 @@
             color: #ef4444;
         }
 
+        .error-message {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #92400e;
+        }
+
         @media (max-width: 768px) {
             .cards-grid {
                 grid-template-columns: 1fr;
@@ -347,14 +356,16 @@
 
         <div class="upload-section">
             <div class="upload-area" id="uploadArea">
-                <input type="file" id="fileInput" accept=".csv,.txt" />
+                <input type="file" id="fileInput" accept=".csv,.txt,.xls,.xlsx" />
                 <div class="upload-icon">📤</div>
                 <div class="upload-text">
                     <h3>Arraste seu arquivo aqui ou clique para selecionar</h3>
-                    <p>Suporta arquivos CSV e TXT (formato hora-a-hora com colunas: Hora, Meta Volumes, Volumes, Meta R$, Faturado)</p>
+                    <p>Suporta arquivos TXT, CSV e XLSX (formato hora-a-hora)</p>
                 </div>
             </div>
         </div>
+
+        <div id="errorContainer" style="display: none; margin-bottom: 30px;"></div>
 
         <div id="resultsContainer" style="display: none;">
             <div class="cards-grid" id="cardsGrid">
@@ -448,6 +459,7 @@
         const fileInput = document.getElementById('fileInput');
         const resultsContainer = document.getElementById('resultsContainer');
         const emptyState = document.getElementById('emptyState');
+        const errorContainer = document.getElementById('errorContainer');
 
         // Drag and drop
         uploadArea.addEventListener('click', () => fileInput.click());
@@ -473,41 +485,105 @@
             }
         });
 
+        function showError(message) {
+            errorContainer.innerHTML = `<div class="error-message">⚠️ ${message}</div>`;
+            errorContainer.style.display = 'block';
+        }
+
+        function hideError() {
+            errorContainer.style.display = 'none';
+        }
+
         function processFile(file) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                const content = e.target.result;
-                const data = parseCSV(content);
-                calculateAndDisplay(data);
+                try {
+                    const content = e.target.result;
+                    const data = parseFile(content);
+                    
+                    if (data.length === 0) {
+                        showError('Nenhum dado encontrado no arquivo. Verifique o formato.');
+                        return;
+                    }
+                    
+                    hideError();
+                    calculateAndDisplay(data);
+                } catch (error) {
+                    showError(`Erro ao processar arquivo: ${error.message}`);
+                }
             };
             reader.readAsText(file);
         }
 
-        function parseCSV(content) {
+        function parseFile(content) {
             const lines = content.split('\n').filter(line => line.trim());
-            const headers = lines[0].split('\t');
-            const data = [];
+            let data = [];
 
-            for (let i = 1; i < lines.length; i++) {
-                const values = lines[i].split('\t');
-                if (values[0].trim() === 'Totais:' || values[0].trim() === 'PROJEÇÃO' || values[0].trim() === '%') {
-                    continue; // Pular linhas de totais e projeção
-                }
+            // Detectar se é separado por tabs ou vírgulas
+            const firstLine = lines[0];
+            const separator = firstLine.includes('\t') ? '\t' : ',';
 
-                const row = {
-                    hora: values[0] ? values[0].trim() : '',
-                    metaVolumes: parseFloat(values[1] ? values[1].replace(/\./g, '').replace(',', '.') : 0) || 0,
-                    volumes: parseFloat(values[2] ? values[2].replace(/\./g, '').replace(',', '.') : 0) || 0,
-                    metaR: parseFloat(values[3] ? values[3].replace(/\./g, '').replace(',', '.') : 0) || 0,
-                    faturado: parseFloat(values[4] ? values[4].replace(/\./g, '').replace(',', '.') : 0) || 0
-                };
-
-                if (row.hora) {
-                    data.push(row);
+            // Encontrar a linha de headers
+            let headerLineIndex = -1;
+            for (let i = 0; i < Math.min(5, lines.length); i++) {
+                const line = lines[i].toLowerCase();
+                if (line.includes('hora') && line.includes('faturado')) {
+                    headerLineIndex = i;
+                    break;
                 }
             }
 
+            if (headerLineIndex === -1) {
+                headerLineIndex = 0; // Assume primeira linha é header
+            }
+
+            // Parse dados a partir do header
+            for (let i = headerLineIndex + 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // Pular linhas de totais ou vazias
+                if (!line || line.includes('Totais:') || line.includes('PROJEÇÃO') || line.includes('%') || line.includes('ATINGIMENTO')) {
+                    continue;
+                }
+
+                const values = line.split(separator).map(v => v.trim());
+                
+                if (values.length < 5) continue;
+
+                const hora = values[0];
+                
+                // Validar se é hora válida (HH:MM ou número de hora)
+                if (!hora || hora === '-' || hora === 'Hora') continue;
+
+                const row = {
+                    hora: hora,
+                    metaVolumes: parseValue(values[1]),
+                    volumes: parseValue(values[2]),
+                    metaR: parseValue(values[3]),
+                    faturado: parseValue(values[4])
+                };
+
+                data.push(row);
+            }
+
             return data;
+        }
+
+        function parseValue(value) {
+            if (!value || value === '-' || value === '') return 0;
+            
+            // Remove espaços
+            value = value.trim();
+            
+            // Se tem vírgula como separador decimal
+            if (value.includes(',')) {
+                value = value.replace(/\./g, '').replace(',', '.');
+            } else {
+                // Se tem ponto, remove se for formatação de milhar
+                value = value.replace(/\./g, '');
+            }
+            
+            return parseFloat(value) || 0;
         }
 
         function calculateAndDisplay(data) {

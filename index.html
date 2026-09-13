@@ -276,6 +276,21 @@
             border-radius: 8px;
             margin-bottom: 20px;
             color: #92400e;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .debug-info {
+            background: #e0f2fe;
+            border-left: 4px solid #0284c7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #0c4a6e;
+            font-family: monospace;
+            font-size: 12px;
         }
 
         @media (max-width: 768px) {
@@ -317,6 +332,7 @@
             </div>
         </div>
 
+        <div id="debugContainer" style="display: none; margin-bottom: 30px;"></div>
         <div id="errorContainer" style="display: none; margin-bottom: 30px;"></div>
 
         <div id="resultsContainer" style="display: none;">
@@ -398,6 +414,7 @@
         const resultsContainer = document.getElementById('resultsContainer');
         const emptyState = document.getElementById('emptyState');
         const errorContainer = document.getElementById('errorContainer');
+        const debugContainer = document.getElementById('debugContainer');
 
         uploadArea.addEventListener('click', () => fileInput.click());
         uploadArea.addEventListener('dragover', (e) => {
@@ -422,6 +439,11 @@
             }
         });
 
+        function showDebug(message) {
+            debugContainer.innerHTML = `<div class="debug-info">🔍 DEBUG:<br>${message}</div>`;
+            debugContainer.style.display = 'block';
+        }
+
         function showError(message) {
             errorContainer.innerHTML = `<div class="error-message">⚠️ ${message}</div>`;
             errorContainer.style.display = 'block';
@@ -436,17 +458,27 @@
             reader.onload = (e) => {
                 try {
                     const content = e.target.result;
+                    
+                    // Debug: mostra as primeiras linhas
+                    const lines = content.split('\n');
+                    let debugMsg = `Total de linhas: ${lines.length}<br>`;
+                    debugMsg += `Primeira linha: ${lines[0]}<br>`;
+                    if (lines.length > 1) debugMsg += `Segunda linha: ${lines[1]}<br>`;
+                    if (lines.length > 2) debugMsg += `Terceira linha: ${lines[2]}<br>`;
+                    
+                    showDebug(debugMsg);
+
                     const data = parseFile(content);
                     
                     if (data.length === 0) {
-                        showError('Nenhum dado encontrado no arquivo.');
+                        showError('Nenhum dado encontrado no arquivo. Verifique o formato.');
                         return;
                     }
                     
                     hideError();
                     calculateAndDisplay(data);
                 } catch (error) {
-                    showError(`Erro: ${error.message}`);
+                    showError(`Erro: ${error.message}<br>${error.stack}`);
                 }
             };
             reader.readAsText(file);
@@ -456,6 +488,9 @@
             const lines = content.split('\n').filter(line => line.trim());
             let data = [];
 
+            console.log('Total de linhas:', lines.length);
+            console.log('Primeira linha:', lines[0]);
+
             // Pular primeira linha (header)
             for (let i = 1; i < lines.length; i++) {
                 const line = lines[i].trim();
@@ -464,8 +499,14 @@
 
                 const values = line.split(';').map(v => v.trim());
                 
+                console.log(`Linha ${i}:`, values);
+                console.log(`Comprimento: ${values.length}`);
+
                 // Esperamos: DIA, DTAHORLANCTO, QTDSAIDAOUTRAS, QTDDIFERENCA, VLRSAIDAOUTRAS, VLRDIFERENCA, VLRCTOBRUTO, VLRCTOLIQUIDO
-                if (values.length < 8) continue;
+                if (values.length < 8) {
+                    console.log(`Linha ${i} ignorada: menos de 8 colunas`);
+                    continue;
+                }
 
                 const dtahorlancto = values[1]; // índice 1
                 const qtdSaida = values[2];      // índice 2
@@ -473,6 +514,8 @@
                 const vlrDif = values[5];        // índice 5
                 const vlrBruto = values[6];      // índice 6 - FATURAMENTO
                 const vlrLiquido = values[7];    // índice 7
+
+                console.log(`vlrBruto raw: "${vlrBruto}"`);
 
                 // Extrair hora
                 let hora = '';
@@ -483,6 +526,7 @@
                 if (!hora) continue;
 
                 const brutoValue = parseValue(vlrBruto);
+                console.log(`vlrBruto parsed: ${brutoValue}`);
 
                 const row = {
                     hora: hora,
@@ -495,22 +539,26 @@
                 };
 
                 data.push(row);
+                console.log('Row adicionada:', row);
             }
 
+            console.log('Total de dados:', data.length);
             return data;
         }
 
         function parseValue(str) {
             if (!str || str === '-' || str === '') return 0;
             
-            str = str.trim();
+            str = String(str).trim();
             
             // Converter ponto-e-vírgula decimal ou ponto
             if (str.includes(',')) {
                 str = str.replace(/\./g, '').replace(',', '.');
             }
             
-            return parseFloat(str) || 0;
+            const result = parseFloat(str) || 0;
+            console.log(`parseValue("${str}") = ${result}`);
+            return result;
         }
 
         function calculateAndDisplay(data) {
@@ -532,6 +580,10 @@
             // Calcular projeção
             const averagePerHour = hoursWithSales > 0 ? totalBruto / hoursWithSales : 0;
             const projection = averagePerHour * 24;
+
+            console.log('Total Bruto:', totalBruto);
+            console.log('Hours with Sales:', hoursWithSales);
+            console.log('Projection:', projection);
 
             // Atualizar cards
             document.getElementById('totalValue').textContent = formatCurrency(totalBruto);
